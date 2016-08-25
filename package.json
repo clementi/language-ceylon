@@ -5,8 +5,8 @@
   "keywords": [
 	"ceylon"
   ],
-  "repository": "https://github.com/atom/language-ceylon",
-  "license": "MIT",
+  "repository": "https://github.com/clementi/language-ceylon",
+  "license": "Apache 2.0",
   "engines": {
     "atom": ">=1.0.0 <2.0.0"
   },
