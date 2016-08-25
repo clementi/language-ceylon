@@ -1,0 +1,656 @@
+fileTypes: [
+  "ceylon"
+]
+name: "Ceylon"
+patterns: [
+  {
+    include: "#module"
+  }
+  {
+    include: "#package"
+  }
+  {
+    include: "#imports"
+  }
+  {
+    include: "#code"
+  }
+]
+repository:
+  annotations:
+    patterns: [
+      {
+        include: "#ceylondoc"
+      }
+      {
+        captures:
+          "1":
+            name: "support.function.annotation.ceylon"
+            patterns: [
+              {
+                match: "abstract"
+                name: "storage.modifier.abstract.ceylon"
+              }
+              {
+                match: "actual"
+                name: "storage.modifier.actual.ceylon"
+              }
+              {
+                match: "default"
+                name: "storage.modifier.default.ceylon"
+              }
+              {
+                match: "formal"
+                name: "storage.modifier.formal.ceylon"
+              }
+              {
+                match: "final"
+                name: "storage.modifier.final.ceylon"
+              }
+              {
+                match: "late"
+                name: "storage.modifier.formal.ceylon"
+              }
+              {
+                match: "sealed"
+                name: "storage.modifier.sealed.ceylon"
+              }
+              {
+                match: "shared"
+                name: "storage.modifier.shared.ceylon"
+              }
+            ]
+        match: "\\b(abstract|actual|annotation|default|formal|final|late|optional|sealed|shared|variable)\\s+"
+        name: "meta.declaration.annotation.language.ceylon"
+      }
+      {
+        begin: "\\b(deprecated|by|native|license|tagged)\\s*(\\()"
+        beginCaptures:
+          "1":
+            name: "support.function.annotation.ceylon"
+          "2":
+            name: "punctuation.definition.annotation-arguments.begin.ceylon"
+        contentName: "storage.type.annotation.ceylon"
+        end: "(\\))"
+        endCaptures:
+          "1":
+            name: "punctuation.definition.annotation-arguments.end.ceylon"
+        name: "meta.declaration.annotation.language.ceylon"
+        patterns: [
+          {
+            include: "#strings"
+          }
+        ]
+      }
+      {
+        begin: "\\b(doc)\\s*(\\()"
+        beginCaptures:
+          "1":
+            name: "support.function.annotation.ceylon"
+          "2":
+            name: "punctuation.definition.annotation-arguments.begin.ceylon"
+        end: "(\\))"
+        endCaptures:
+          "1":
+            name: "punctuation.definition.annotation-arguments.end.ceylon"
+        name: "meta.declaration.annotation.language.ceylon"
+        patterns: [
+          {
+            include: "#ceylondoc"
+          }
+        ]
+      }
+      {
+        begin: "\\b(see|throws)\\s*(\\()"
+        beginCaptures:
+          "1":
+            name: "support.function.annotation.ceylon"
+          "2":
+            name: "punctuation.definition.annotation-arguments.begin.ceylon"
+        end: "\\)"
+        endCaptures:
+          "1":
+            name: "punctuation.definition.annotation-arguments.end.ceylon"
+        name: "meta.declaration.annotation.language.ceylon"
+        patterns: [
+          {
+            include: "#strings"
+          }
+        ]
+      }
+      {}
+    ]
+    repository:
+      ceylondoc:
+        patterns: [
+          {
+            begin: "^\\s*(\"(?:\"\")?)"
+            beginCaptures:
+              "1":
+                name: "punctuation.definition.comment.begin.ceylondoc"
+            end: "(\\1)\\s*$"
+            endCaptures:
+              "1":
+                name: "punctuation.definition.comment.end.ceylondoc"
+            name: "comment.block.documentation.ceylon"
+          }
+        ]
+  "class-body": {}
+  code:
+    patterns: [
+      {
+        include: "#comments"
+      }
+      {
+        include: "#annotations"
+      }
+      {
+        include: "#interfaces"
+      }
+    ]
+  comments:
+    patterns: [
+      {
+        captures:
+          "0":
+            name: "punctuation.definition.comment.ceylon"
+        match: "/\\*\\*/"
+        name: "comment.block.empty.ceylon"
+      }
+      {
+        include: "#comments-inline"
+      }
+    ]
+  "comments-inline":
+    patterns: [
+      {
+        begin: "^\\s*(//)"
+        beginCaptures:
+          "1":
+            name: "punctuation.definition.comment.ceylon"
+        name: "comment.line.double-slash.ceylon"
+        while: "^\\s*(//)"
+        whileCaptures:
+          "1":
+            name: "punctuation.definition.comment.ceylon"
+      }
+    ]
+  "constants-and-special-vars":
+    patterns: [
+      {
+        match: "\\b(true|false|null|nothing)\\b"
+        name: "constant.language.ceylon"
+      }
+      {
+        match: "\\b(this|super|outer)\\b"
+        name: "variable.language.ceylon"
+      }
+      {
+        match: "(?<!\\w)\\$([01]+|[01]{1,4}(_[01]{4})+)(?!\\w|\\.)"
+        name: "constant.numeric.bin.ceylon"
+      }
+      {
+        match: "(?<!\\w)\\#(\\h+|\\h{1,4}(_\\h{4})+|\\h{1,2}(_\\h{2})+)(?!\\w|\\.)"
+        name: "constant.numeric.hex.ceylon"
+      }
+      {
+        match: "\\b([0-9]{1,3}(_[0-9]{3})+|[0-9]+)[kMGTP]?(?!\\w|\\.)"
+        name: "constant.numeric.integer.ceylon"
+      }
+      {
+        match: '''
+          (?x)
+          					(?>
+          						(	([0-9]{1,3}(_[0-9]{3})+|[0-9]+)			# Leading digits
+          							(?=[eEkMGTPmunpf.])						# Allow for numbers without .
+          						)?
+          						(	(?<=[0-9])(?=[eEkMGTPmunpf])			# Allow for numbers without .
+          						  | \\.
+          						)
+          						(	(([0-9]{3}_)+[0-9]{1,3}|[0-9]+)			# Numbers after .
+          						)?
+          						(	[eE][+-]?[0-9]+							# Exponent
+          						  | [kMGTP]                                 # Magnitude
+          						  | [munpf]                                 # Fractional magnitude
+          						)?
+          					)
+          					(?!\\w)											# Ensure word boundry
+          					
+        '''
+        name: "constant.numeric.float.ceylon"
+      }
+      {
+        match: "'[^\\\\']'"
+        name: "constant.character.literal.ceylon"
+      }
+      {
+        captures:
+          "1":
+            name: "constant.character.escape.ceylon"
+        match: "'(\\\\[btnfre\\\\\"'`0])'"
+        name: "constant.character.literal.ceylon"
+      }
+      {
+        captures:
+          "1":
+            name: "punctuation.definition.character.begin.ceylon"
+          "2":
+            name: "constant.character.escape.ceylon"
+          "3":
+            name: "punctuation.definition.character.end.ceylon"
+        match: "(')(\\\\[btnfre\\\\\"'`0])(')"
+        name: "constant.character.literal.ceylon"
+      }
+      {
+        begin: "'(?=\\\\\\{)"
+        end: "'"
+        name: "constant.character.literal.ceylon"
+        patterns: [
+          {
+            match: "\\\\\\{#\\h{2,6}\\}"
+            name: "constant.character.escape.unicode.code.ceylon"
+          }
+          {
+            match: "\\\\\\{(?:[A-Z](?:[A-Z0-9\\-]*?[A-Z0-9])?)(?: (?:[A-Z](?:[A-Z0-9\\-]*?[A-Z0-9])?))*\\}"
+            name: "constant.character.escape.unicode.name.ceylon"
+          }
+          {
+            match: "\\\\\\{.*}?(?=')"
+            name: "invalid.illegal.character.escape.ceylon"
+          }
+        ]
+      }
+      {
+        captures:
+          "1":
+            name: "invalid.illagal.character.literal"
+        match: "'(.{2,})'"
+        name: "constant.character.literal.ceylon"
+      }
+    ]
+  expression:
+    patterns: [
+      {
+        include: "#strings"
+      }
+      {
+        include: "#constants-and-special-vars"
+      }
+    ]
+  imports:
+    patterns: [
+      {
+        begin: "^\\b(import)\\s+([^\\s{;.]+(?:\\.[^\\s{;.]+)+)+\\s*(\\{)"
+        beginCaptures:
+          "1":
+            name: "keyword.control.import.ceylon"
+          "2":
+            name: "variable.other.package.ceylon"
+          "3":
+            name: "meta.bracket.ceylon"
+        contentName: "meta.import.selector.ceylon"
+        end: "(\\})"
+        endCaptures:
+          "1":
+            name: "meta.bracket.ceylon"
+        name: "meta.import.ceylon"
+        patterns: [
+          {
+            include: "#nested-import-element"
+          }
+          {
+            include: "#import-element"
+          }
+          {
+            include: "#import-wildcard"
+          }
+        ]
+      }
+    ]
+    repository:
+      "import-element":
+        patterns: [
+          {
+            captures:
+              "1":
+                name: "meta.import.alias.ceylon"
+              "2":
+                name: "variable.other.import.alias.ceylon"
+              "3":
+                name: "keyword.operator.assignment.ceylon"
+              "4":
+                name: "constant.character.escape.case-modifier.ceylon"
+              "5":
+                name: "variable.other.import.ceylon"
+            match: "\\s*(([[:word:]]+)\\s*(=+)\\s*)?(\\\\[iI])?([[:word:]]+)\\s*"
+            name: "meta.import.element.ceylon"
+          }
+        ]
+      "import-wildcard":
+        patterns: [
+          {
+            contentName: "keyword.operator.import.wildcard.ceylon"
+            match: "\\.{3}"
+            name: "meta.import.element"
+          }
+        ]
+      "nested-import-element":
+        patterns: [
+          {
+            begin: "\\s*(([[:word:]]+)\\s*(=+)\\s*)?(\\\\[iI])?([[:word:]]+)\\s*(\\{)"
+            beginCaptures:
+              "1":
+                name: "meta.import.alias.ceylon"
+              "2":
+                name: "variable.other.import.alias.ceylon"
+              "3":
+                name: "keyword.operator.assignment.ceylon"
+              "4":
+                name: "constant.character.escape.case-modifier.ceylon"
+              "5":
+                name: "variable.other.import.ceylon"
+              "6":
+                name: "meta.bracket.ceylon"
+            end: "(\\})"
+            patterns: [
+              {
+                include: "#nested-import-element"
+              }
+              {
+                include: "#import-element"
+              }
+              {
+                include: "#import-wildcard"
+              }
+            ]
+          }
+        ]
+  interfaces:
+    patterns: [
+      {
+        begin: "(?=\\w?[\\w\\s]*(?:interface|dynamic)\\s+(?:(?:\\\\[iI])?\\w+))"
+        end: "}"
+        endCaptures:
+          "0":
+            name: "punctuation.section.class.end.ceylon"
+        name: "meta.interface.ceylon"
+        patterns: [
+          {
+            include: "#annotations"
+          }
+          {
+            include: "#comments"
+          }
+          {
+            begin: "\\b(interface|dynamic)\\s+((?:\\\\[iI])?\\w+)"
+            captures:
+              "1":
+                name: "keyword.other.interface.ceylon"
+              "2":
+                name: "entity.name.type.interface.ceylon"
+                patterns: [
+                  {
+                    match: "\\b([:lower:]|\\\\i)(?=\\w*)"
+                    name: "invalid.illegal.lowercase_character_not_allowed_here.ceylon"
+                  }
+                ]
+            end: "(?=\\{|of|extends|satisfies|given)"
+            name: "meta.definition.interface.identifier.ceylon"
+          }
+          {
+            begin: "\\b(of)\\s+"
+            beginCaptures:
+              "1":
+                name: "keyword.other.of.ceylon"
+            end: "(?=\\{|extends|satisfies|given)"
+            name: "meta.definition.case.enumeration.ceylon"
+            patterns: [
+              {
+                captures:
+                  "1":
+                    name: "constant.character.escape.initial-uppercase.ceylon"
+                  "2":
+                    name: "entity.other.case-class.ceylon"
+                match: "(\\\\I)([\\w_]+)\\s*"
+                name: "meta.other.case-class.ceylon"
+              }
+              {
+                captures:
+                  "1":
+                    name: "entity.other.case-class.ceylon"
+                match: "\\b([[:upper:]][\\w_]*)\\s*"
+                name: "meta.other.case-class.ceylon"
+              }
+              {
+                captures:
+                  "1":
+                    name: "constant.character.escape.initial-lowercase.ceylon"
+                  "2":
+                    name: "entity.other.case-value.ceylon"
+                match: "(\\\\i)([\\w_]+)\\s*"
+                name: "meta.other.case-value.ceylon"
+              }
+              {
+                captures:
+                  "1":
+                    name: "entity.other.case-value.ceylon"
+                match: "\\b([[:lower:]][\\w_]*)\\s*"
+                name: "meta.other.case-value.ceylon"
+              }
+              {
+                match: "\\|{1}(?=\\s*[\\\\\\w_])"
+                name: "keyword.operator.type.union.ceylon"
+              }
+              {
+                match: "[^\\s]"
+                name: "invalid.illegal.character_not_allowed.ceylon"
+              }
+            ]
+          }
+          {
+            begin: "\\b(satisfies)\\s+"
+            beginCaptures:
+              "1":
+                name: "keyword.other.satisfies.ceylon"
+            end: "(?:\\{|given)"
+            name: "meta.definition.interface.satisfies.ceylon"
+            patterns: [
+              {
+                match: "\\|{1}"
+                name: "keyword.operator.type.union.ceylon"
+              }
+              {
+                match: "&{1}"
+                name: "keyword.operator.type.intersection.ceylon"
+              }
+              {
+                include: "#type-specifier"
+              }
+            ]
+          }
+          {
+            begin: "{"
+            beginCaptures:
+              "0":
+                name: "punctuation.section.class.begin.ceylon"
+            end: "(?=})"
+            name: "meta.interface.body.ceylon"
+            patterns: [
+              {
+                include: "#class-body"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+    repository:
+      "keyword-given":
+        patterns: []
+      "keyword-of":
+        patterns: []
+      "keyword-satisfies":
+        patterns: []
+  module:
+    patterns: [
+      {
+        include: "#annotations"
+      }
+      {
+        begin: "\\b(module)\\s*"
+        beginCaptures:
+          "1":
+            name: "keyword.other.module.ceylon"
+        end: "(?<=[\\n;])"
+        name: "meta.module.ceylon"
+        patterns: [
+          {
+            include: "#comments"
+          }
+          {
+            captures:
+              "1":
+                name: "variable.other.module.ceylon"
+              "2":
+                name: "string.other.module.version.ceylon"
+            match: "([^\\s;\"{]+)\\s*(\"[^\"]+\")\\s*"
+          }
+          {
+            begin: "{"
+            end: "}"
+            name: "meta.module.body.ceylon"
+            patterns: [
+              {
+                include: "#annotations"
+              }
+              {
+                captures:
+                  "1":
+                    name: "keyword.other.import.ceylon"
+                  "2":
+                    name: "variable.other.import.module.ceylon"
+                  "3":
+                    name: "string.other.maven.module.ceylon"
+                  "4":
+                    name: "string.other.module.import.version.ceylon"
+                  "5":
+                    name: "punctuation.terminator.ceylon"
+                contentName: "storage.modifier.import.ceylon"
+                match: "\\b(import)\\b\\s*((?:[^\\s;\"]+)|(\"[^\"]+\"))\\s*(\"[^\"]+\")\\s*(;)"
+                name: "meta.module.import.ceylon"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  package:
+    patterns: [
+      {
+        captures:
+          "1":
+            name: "keyword.other.package.ceylon"
+          "2":
+            name: "variable.other.package.ceylon"
+          "3":
+            name: "punctuation.terminator.ceylon"
+        match: "\\b(package)\\b(?:\\s*([^ ;$]+)\\s*(;))"
+        name: "meta.package.ceylon"
+      }
+    ]
+  strings:
+    patterns: [
+      {
+        begin: "\"\"\""
+        beginCaptures:
+          "0":
+            name: "punctuation.definition.string.begin.ceylon"
+        end: "\"\"\""
+        endCaptures:
+          "0":
+            name: "punctuation.definition.string.end.ceylon"
+        name: "string.quoted.triple"
+      }
+      {
+        begin: "\""
+        beginCaptures:
+          "0":
+            name: "punctuation.definition.string.begin.ceylon"
+        end: "\""
+        endCaptures:
+          "0":
+            name: "punctuation.definition.string.end.ceylon"
+        name: "string.quoted.double.ceylon"
+        patterns: [
+          {
+            include: "#character-escapes"
+          }
+          {
+            include: "#string-interpolation"
+          }
+        ]
+      }
+      {
+        begin: "`"
+        beginCaptures:
+          "0":
+            name: "punctuation.definition.string.begin.ceylon"
+        end: "`"
+        endCaptures:
+          "0":
+            name: "punctuation.definition.string.end.ceylon"
+        name: "string.quoted.other.metamodel.reference.ceylon"
+      }
+    ]
+    repository:
+      "character-escapes":
+        patterns: [
+          {
+            match: "\\\\[btnfre\\\\\"'`0]"
+            name: "constant.character.escape.ceylon"
+          }
+          {
+            begin: "\\\\(?=\\{)"
+            end: "(?<=\\})"
+            name: "constant.character.escape.ceylon"
+            patterns: [
+              {
+                match: "\\{#\\h{2,6}\\}"
+                name: "constant.character.escape.unicode.code.ceylon"
+              }
+              {
+                match: "\\{(?:[A-Z](?:[A-Z0-9\\-]*?[A-Z0-9])?)(?: (?:[A-Z](?:[A-Z0-9\\-]*?[A-Z0-9])?))*\\}"
+                name: "constant.character.escape.unicode.name.ceylon"
+              }
+              {
+                match: "\\{[^\\}]*\\}"
+                name: "invalid.illegal.unknown-escape.ceylon"
+              }
+            ]
+          }
+          {
+            match: "\\\\."
+            name: "invalid.illegal.unknown-escape.ceylon"
+          }
+        ]
+      "string-interpolation":
+        patterns: [
+          {
+            begin: "``"
+            beginCaptures:
+              "0":
+                name: "punctuation.definition.string-interpolation.begin.ceylon"
+            end: "``"
+            endCaptures:
+              "0":
+                name: "punctuation.definition.string-interpolation.end.ceylon"
+            name: "string.interpolated.ceylon"
+            patterns: [
+              {
+                include: "#expression"
+              }
+            ]
+          }
+        ]
+  "type-name": {}
+scopeName: "source.ceylon"
